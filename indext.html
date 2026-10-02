@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traductor - Idioma ROMER.IO</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #050811;
+            color: #c9d1d9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #0b132b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid #1c2541;
+        }
+        h1 {
+            text-align: center;
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
+            margin-top: 0;
+            font-size: 26px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #00d4ff;
+            text-shadow: 0 0 5px rgba(0, 212, 255, 0.3);
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            background-color: #050811;
+            border: 1px solid #1c2541;
+            border-radius: 6px;
+            color: #ffffff;
+            padding: 10px;
+            box-sizing: border-box;
+            resize: vertical;
+            font-size: 16px;
+        }
+        textarea:focus {
+            border-color: #00d4ff;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+        }
+        .buttons-zone {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-translate {
+            background-color: #00b4d8;
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 180, 216, 0.3);
+        }
+        .btn-translate:hover {
+            background-color: #0096c7;
+            box-shadow: 0 0 15px rgba(0, 180, 216, 0.6);
+        }
+        .btn-copy {
+            background-color: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+        }
+        .btn-copy:hover {
+            background-color: #30363d;
+            color: #ffffff;
+        }
+        .btn-invert {
+            background-color: #1c2541;
+            color: #00d4ff;
+            border: 1px solid #00d4ff;
+        }
+        .btn-invert:hover {
+            background-color: #00d4ff;
+            color: #050811;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+        .result-box {
+            background-color: #050811;
+            border: 1px solid #1c2541;
+            border-radius: 6px;
+            padding: 15px;
+            min-height: 80px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 16px;
+            color: #00ffcc;
+            text-shadow: 0 0 4px rgba(0, 255, 204, 0.2);
+        }
+        .footer {
+            text-align: center;
+            font-size: 13px;
+            margin-top: 25px;
+        }
+        .footer a {
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        .footer a:hover {
+            color: #00ffcc;
+            text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Idioma "ROMER.IO"</h1>
+    
+    <label id="label-origen">Escribe tu texto en Espanol aquí:</label>
+    <textarea id="texto-entrada" placeholder="Escribe aquí..."></textarea>
+    
+    <div class="buttons-zone">
+        <button class="btn-invert" id="btn-invertir" onclick="invertirDireccion()">🔄 Invertir Dirección</button>
+        <button class="btn-translate" id="btn-traducir" onclick="procesarTraduccion()">Traducir Texto</button>
+        <button class="btn-copy" id="btn-copiar" onclick="copiarTexto()"> Copiar resultado</button>
+    </div>
+    
+    <label id="label-destino">Resultado traducido (Idioma ROMER.IO):</label>
+    <div class="result-box" id="texto-salida">El texto traducido aparecerá aquí tras presionar "Traducir Texto"...</div>
+    
+    <!-- Redirección web configurada abajo -->
+    <div class="footer">
+        Desarrollado por <a href="https://landirianositeoficial-pro.github.io/landirianoswebsite/" target="_blank" id="enlace-landirianos">LANDIRIANOS SITE</a>
+    </div>
+</div>
+
+<script>
+// Diccionario Base del Idioma ROMER.IO
+const diccionario = {
+    'A': 'NHEN', 'B': 'FED', 'C': 'HEN', 'D': 'FIL', 'E': 'WE', 
+    'F': 'SDI', 'G': 'HFY', 'H': 'KEI', 'I': 'LOD', 'J': 'KIN', 
+    'K': 'UFO', 'L': 'NNI', 'M': 'DEM', 'N': 'YUNN', 'Ñ': 'YUNK',
+    'O': 'HOO', 'P': 'PEN', 'Q': 'KJUM', 'R': 'RRE', 'S': 'PSE', 
+    'T': 'QER', 'U': 'BOO', 'V': 'PEL', 'W': 'GUOI', 'X': 'LAMO', 
+    'Y': 'YUSO', 'Z': 'SEZ', '0': '*', '1': '··', '2': '···', 
+    '3': '·=', '4': '~·', '5': "|'|", '6': '·/·', '7': '=$', 
+    '8': "'~", '9': 'ººº', '?': '¬'
+};
+
+const diccionarioInverso = {};
+for (let clave in diccionario) {
+    diccionarioInverso[diccionario[clave]] = clave;
+}
+
+let esEspanolARomer = true;
+
+function invertirDireccion() {
+    esEspanolARomer = !esEspanolARomer;
+    
+    document.getElementById("texto-entrada").value = "";
+    document.getElementById("texto-salida").innerText = "El texto traducido aparecerá aquí tras presionar 'Traducir Texto'...";
+    
+    if (esEspanolARomer) {
+        document.getElementById("label-origen").innerText = "Escribe tu texto en Español aquí:";
+        document.getElementById("label-destino").innerText = "Resultado traducido (Idioma ROMER.IO):";
+        document.getElementById("texto-salida").style.color = "#00ffcc"; 
+    } else {
+        document.getElementById("label-origen").innerText = "Escribe tu texto en idioma ROMER.IO aquí:";
+        document.getElementById("label-destino").innerText = "Resultado traducido (Idioma Español):";
+        document.getElementById("texto-salida").style.color = "#00d4ff"; 
+    }
+}
+
+function traducirEspanolARomer(texto) {
+    let lineas = texto.toUpperCase().split('\n');
+    let lineasTraducidas = lineas.map(linea => {
+        if (linea.trim() === "") return "";
+        let palabras = linea.trim().split(/\s+/);
+        let palabrasTraducidas = palabras.map(palabra => {
+            let letrasTraducidas = [];
+            for (let letra of palabra) {
+                if (diccionario[letra]) {
+                    letrasTraducidas.push(diccionario[letra]);
+                } else {
+                    letrasTraducidas.push(letra); 
+                }
+            }
+            return letrasTraducidas.join(' '); 
+        });
+        return palabrasTraducidas.join(' +++ ');
+    });
+    return lineasTraducidas.join('\n');
+}
+
+function traducirRomerAEspanol(texto) {
+    let lineas = texto.split('\n');
+    let lineasTraducidas = lineas.map(linea => {
+        if (linea.trim() === "") return "";
+        let palabrasCodificadas = linea.split('+++');
+        let palabrasTraducidas = palabrasCodificadas.map(palabraCod => {
+            let letrasCodificadas = palabraCod.trim().split(/\s+/);
+            let palabraEnClaro = "";
+            
+            for (let codigo of letrasCodificadas) {
+                if (diccionarioInverso[codigo]) {
+                    palabraEnClaro += diccionarioInverso[codigo];
+                } else if (codigo !== "") {
+                    palabraEnClaro += codigo; 
+                }
+            }
+            return palabraEnClaro;
+        });
+        return palabrasTraducidas.join(' '); 
+    });
+    return lineasTraducidas.join('\n');
+}
+
+function procesarTraduccion() {
+    const input = document.getElementById("texto-entrada").value;
+    const outputBox = document.getElementById("texto-salida");
+    
+    if (input.trim() === "") {
+        outputBox.innerText = "Por favor, escribe algún texto para traducir.";
+        return;
+    }
+    
+    if (esEspanolARomer) {
+        outputBox.innerText = traducirEspanolARomer(input);
+    } else {
+        outputBox.innerText = traducirRomerAEspanol(input);
+    }
+}
+
+function copiarTexto() {
+    const outputBox = document.getElementById("texto-salida");
+    const textoACopiar = outputBox.innerText;
+    const btnCopiar = document.getElementById("btn-copiar");
+    
+    // Evitamos copiar el texto informativo por defecto
+    if (textoACopiar === "El texto traducido aparecerá aquí tras presionar 'Traducir Texto'..." || 
+        textoACopiar === "Por favor, escribe algún texto para traducir." || 
+        textoACopiar.trim() === "") {
+        alert("No hay ningún texto traducido listo para copiar.");
+        return;
+    }
+    
+    // API de copia del navegador
+    navigator.clipboard.writeText(textoACopiar).then(() => {
+        const textoOriginal = btnCopiar.innerHTML;
+        btnCopiar.innerHTML = "✅ ¡Copiado!";
+        btnCopiar.style.backgroundColor = "#238636";
+        btnCopiar.style.color = "#ffffff";
+        
+        // Volver al estado normal tras 2 segundos
+        setTimeout(() => {
+            btnCopiar.innerHTML = textoOriginal;
+            btnCopiar.style.backgroundColor = "#21262d";
+            btnCopiar.style.color = "#c9d1d9";
+        }, 2000);
+    }).catch(err => {
+        console.error('Error al copiar el texto: ', err);
+    });
+}
+</script>
+
+</body>
+</html>
