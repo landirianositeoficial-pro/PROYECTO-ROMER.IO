@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traductor - Idioma ROMER.IO</title>
+    <style>
+        /* Fondo con diseño de matriz de código digital azul */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #050b14;
+            background-image: 
+                linear-gradient(90deg, rgba(0, 140, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(0, 140, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(5, 11, 20, 0.3) 0%, #050b14 100%),
+                repeating-linear-gradient(0deg, rgba(56, 189, 248, 0.1) 0px, rgba(56, 189, 248, 0.1) 2px, transparent 2px, transparent 4px);
+            background-size: 40px 40px, 40px 40px, 100% 100%, 100% 6px;
+            color: #f8fafc;
+            max-width: 900px;
+            margin: 40px auto 100px auto; /* Espacio extra abajo para que el footer no tape el contenido */
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Efecto de líneas de datos cayendo en el fondo */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, transparent 0%, rgba(56, 189, 248, 0.05) 50%, transparent 100%);
+            background-size: 100% 800px;
+            animation: matrix-fall 12s linear infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes matrix-fall {
+            0% { background-position: 0 -800px; }
+            100% { background-position: 0 800px; }
+        }
+
+        /* Contenedor principal con efecto de cristal translúcido */
+        .container {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 15px rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        
+        /* Título oficial con brillo neón */
+        h1 {
+            text-align: center;
+            font-size: 2.7rem;
+            color: #e2e8f0;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            transition: all 0.4s ease;
+            cursor: default;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+        }
+        h1:hover {
+            color: #fff;
+            text-shadow: 0 0 15px #38bdf8, 
+                         0 0 30px #38bdf8, 
+                         0 0 50px #0284c7;
+            transform: scale(1.02);
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #94a3b8;
+        }
+        
+        .contador-palabras {
+            float: right;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 12px;
+            background-color: rgba(15, 23, 42, 0.9);
+            color: #f8fafc;
+            border: 2px solid #475569;
+            border-radius: 6px;
+            box-sizing: border-box;
+            resize: vertical;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        textarea:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+            outline: none;
+        }
+
+        /* Botón de acción principal */
+        .btn-traducir {
+            width: 100%;
+            background-color: #38bdf8;
+            color: #0f172a;
+            border: none;
+            padding: 14px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            margin-bottom: 25px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(56, 189, 248, 0.2);
+        }
+        .btn-traducir:hover {
+            background-color: #7dd3fc;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.6);
+        }
+        .btn-traducir:active {
+            transform: scale(0.98);
+        }
+
+        .output-container {
+            position: relative;
+            margin-top: 10px;
+        }
+        .output-box {
+            background: rgba(15, 23, 42, 0.95);
+            border-left: 5px solid #38bdf8;
+            padding: 15px;
+            padding-top: 50px;
+            border-radius: 4px;
+            min-height: 150px;
+            max-height: 400px;
+            overflow-y: auto;
+            word-wrap: break-word;
+            font-family: monospace;
+            font-size: 16px;
+            white-space: pre-wrap;
+            color: #38bdf8;
+            border-top: 1px solid rgba(56, 189, 248, 0.2);
+            border-right: 1px solid rgba(56, 189, 248, 0.2);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .placeholder-text {
+            color: #64748b;
+            font-style: italic;
+        }
+        
+        /* Botón de copiar */
+        .btn-copiar {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background-color: #334155;
+            color: #f8fafc;
+            border: 1px solid #475569;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        .btn-copiar:hover {
+            background-color: #475569;
+            border-color: #38bdf8;
+        }
+        .btn-copiar.copied {
+            background-color: #4ade80;
+            color: #0f172a;
+            border-color: #4ade80;
+        }
+
+        /* Estilos del Pie de Página (Footer) */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px 0;
+            font-size: 14px;
+            color: #94a3b8;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .link-landirianos {
+            color: #00f0ff; /* Azul eléctrico */
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .link-landirianos:hover {
+            color: #ffffff;
+            text-shadow: 0 0 8px #00f0ff, 0 0 15px #00f0ff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Idioma "ROMER.IO"</h1>
+    
+    <div>
+        <span id="wordCount" class="contador-palabras">Palabras: 0 / 10.000</span>
+        <label for="inputText">Escribe tu texto en español aquí:</label>
+    </div>
+    <textarea id="inputText" placeholder="Pega aquí tu fragmento de texto masivo (Soporta hasta 10,000 palabras)..."></textarea>
+    
+    <button id="btnTraducir" class="btn-traducir">Traducir Texto</button>
+    
+    <div class="output-container">
+        <label>Resultado traducido:</label>
+        <button id="btnCopiar" class="btn-copiar">Copiar Resultado</button>
+        <div id="outputText" class="output-box"><span class="placeholder-text">El texto traducido aparecerá aquí tras presionar "Traducir Texto"...</span></div>
+    </div>
+
+    <!-- Pie de página integrado dentro de la vista estilizada -->
+    <div class="footer">
+        Desarrollado por <a class="link-landirianos" href="https://landirianositeoficial-pro.github.io/landirianoswebsite/" target="_blank">LANDIRIANOS SITE</a>
+    </div>
+</div>
+
+<script>
+    // Diccionario Oficial ROMER.IO
+    const diccionario = {
+        'A': 'NHEN', 'B': 'FED', 'C': 'HEN', 'D': 'FIL', 'E': 'WE', 
+        'F': 'SDI', 'G': 'HFY', 'H': 'KEI', 'I': 'LOD', 'J': 'KIN', 
+        'K': 'UFO', 'L': 'NNI', 'M': 'DEM', 'N': 'YUNÑ', 'Ñ': 'YUNÑ', 
+        'O': 'HOO', 'P': 'PEN', 'Q': 'KJUM', 'R': 'RRE', 'S': 'PSE', 
+        'T': 'QER', 'U': 'U', 'V': 'PEL', 'W': 'GUOI', 'X': 'LAMO', 
+        'Y': 'YUSO', 'Z': 'SEZ',
+        '0': '*', '1': '··', '2': '···', '3': '·=', '4': '~·', 
+        '5': "|'|", '6': '·/·', '7': '=\$', '8': "'~", '9': 'ººº',
+        ' ': '+++', '?': '¬', '¿': '¬'
+    };
+
+    const input = document.getElementById('inputText');
+    const output = document.getElementById('outputText');
+    const btnTraducir = document.getElementById('btnTraducir');
+    const btnCopiar = document.getElementById('btnCopiar');
+    const wordCount = document.getElementById('wordCount');
+
+    // Contador de palabras
+    input.addEventListener('input', () => {
+        const texto = input.value.trim();
+        const totalPalabras = texto === "" ? 0 : texto.split(/\s+/).length;
+        wordCount.textContent = `Palabras: ${totalPalabras.toLocaleString()} / 10.000`;
+        
+        if(totalPalabras > 10000) {
+            wordCount.style.color = '#ef4444';
+        } else {
+            wordCount.style.color = '#64748b';
+        }
+    });
+
+    // Procesamiento optimizado
+    btnTraducir.addEventListener('click', () => {
+        let texto = input.value;
+        
+        if (texto.trim() === '') {
+            output.innerHTML = '<span class="placeholder-text">El texto traducido aparecerá aquí tras presionar "Traducir Texto"...</span>';
+            return;
+        }
+
+        texto = texto.toUpperCase()
+                     .normalize("NFD")
+                     .replace(/[\u0300-\u036f]/g, (match) => {
+                         return texto.includes('Ñ') ? match : '';
+                     });
+
+        const longitud = texto.length;
+        let resultado = new Array(longitud);
+        
+        for (let i = 0; i < longitud; i++) {
+            const caracter = texto[i];
+            resultado[i] = diccionario[caracter] !== undefined ? diccionario[caracter] : caracter;
+        }
+        
+        output.textContent = resultado.join(' ');
+    });
